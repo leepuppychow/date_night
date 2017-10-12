@@ -1,3 +1,4 @@
+require 'pry'
 class Tree
   attr_reader   :name,
                 :root,
@@ -9,6 +10,7 @@ class Tree
     @root = nil
     @current_node = nil
     @sorted_scores = []
+    @nodes_at_this_depth = []
     @total_nodes = 0
     @children_count = 0
   end
@@ -97,7 +99,6 @@ class Tree
   end
 
   def load(filename)
-    @total_nodes = 0
     file = split_up_comma_separated_file(filename)
     return insert_file_movies_into_tree(file)
   end
@@ -119,26 +120,33 @@ class Tree
     return movies_entered
   end
 
-  def health(depth, current_node=@root, nodes_at_this_depth = [])
-    if current_node.left_child != nil
-      health(depth, current_node.left_child, nodes_at_this_depth)
+  def health(depth)
+    @nodes_at_this_depth = []
+    binding.pry
+    @total_nodes = 0
+
+    health_algorithm(depth)
+    @nodes_at_this_depth.map! do |node|
+      node << (node.last.to_f / @total_nodes.to_f * 100).round
     end
+  end
+
+  def health_algorithm(depth, current_node=@root)
+    if current_node.left_child != nil
+      health_algorithm(depth, current_node.left_child)
+    end
+
+    @total_nodes += 1
 
     if current_node.depth == depth
       @children_count = 0
-      children = find_number_of_children(current_node)
-      nodes_at_this_depth << [current_node.score, children, percent(children)]
+      number_of_children = find_number_of_children(current_node)
+      @nodes_at_this_depth << [current_node.score, number_of_children]
     end
 
     if current_node.right_child != nil
-     health(depth, current_node.right_child, nodes_at_this_depth)
+     health_algorithm(depth, current_node.right_child)
     end
-
-    return nodes_at_this_depth
-  end
-
-  def percent(children)
-    (children.to_f/@total_nodes.to_f*100).floor
   end
 
   def find_number_of_children(current_node)

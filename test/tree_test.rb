@@ -175,8 +175,8 @@ class TreeTest < MiniTest::Test
     tree.insert(69, "Collateral Damage")
 
     assert_equal [[98, 7, 100]], tree.health(0)
-    assert_equal [[58, 6, 86]], tree.health(1)
-    assert_equal [[36, 2, 29], [93, 3, 43]], tree.health(2)
+    assert_equal [[58, 6, 85]], tree.health(1)
+    assert_equal [[36, 2, 28], [93, 3, 42]], tree.health(2)
   end
 
 end
